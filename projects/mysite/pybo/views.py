@@ -6,8 +6,6 @@ from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .gpt import new_question_id, get_response
-from asgiref.sync import async_to_sync, sync_to_async
-import asyncio
 import os
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

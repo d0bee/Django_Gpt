@@ -1,5 +1,4 @@
 import os
-import django
 import openai
 import sqlite3
 import time
@@ -22,16 +21,16 @@ def new_question_id():
     cur.execute("SELECT id FROM pybo_question")
     rows = cur.fetchall()
 
-    return len(rows)+1
+    return len(rows)+1, cur
 
-def abc():
-    new_cnt, cur = new_question_id()
-    while True:
-        cur.execute("SELECT id FROM pybo_question")
-        rows = cur.fetchall()
-        if new_cnt == len(rows):
-            print("TODO")
-            new_cnt += 1
-        else:
-            print("FALSE")
-            time.sleep(10)
+new_cnt, cur = new_question_id()
+while True:
+    cur.execute("SELECT id FROM pybo_question")
+    rows = cur.fetchall()
+    if new_cnt == len(rows):
+        print("TODO")
+        new_cnt += 1
+        continue
+    else:
+        print("FALSE")
+        time.sleep(10)
