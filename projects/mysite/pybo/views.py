@@ -65,7 +65,7 @@ def question_create(request):
 
 def write_gpt(request, new_content):
     new_question = get_object_or_404(Question, pk=new_question_id())
-    form = AnswerForm(request.POST)
+    form = AnswerForm()
     answer = form.save(commit=False)
     answer.content = get_response("아래 코드 최적화 해줘"+new_content)
     answer.author = request.user
