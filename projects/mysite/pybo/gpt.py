@@ -4,8 +4,7 @@ import openai
 import sqlite3
 import time
 
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def get_response(S):
     response = openai.ChatCompletion.create(
