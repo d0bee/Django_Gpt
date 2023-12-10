@@ -6,7 +6,9 @@ from .forms import QuestionForm, AnswerForm
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .gpt import new_question_id, get_response
-import threading
+import os
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 def index(request):
     page = request.GET.get('page', '1')
@@ -39,6 +41,9 @@ def answer_create(request, question_id):
     context = {'question': question, 'form': form}
     return render(request, 'pybo/question_detail.html', context)
 
+# 장고는 한 request에서 하나의 쓰레드만 대응된다.
+# 따라서 해당 request에서 두 개 이상의 쓰레드 구동은 불가능하다.
+# 즉, async 처리가 불가능하기 때문에 별도의 server 구동을 통해 비동기화해야한다.
 @login_required(login_url='common:login')
 def question_create(request):
     if request.method == 'POST':
@@ -49,9 +54,8 @@ def question_create(request):
             question.create_date = timezone.now()
             question.save()
             # 항시 대기보다 요청시 처리로 변경
-            t1 = threading.Thread(target=start_gpt(request, question.content))
-            t1.daemon = True
-            t1.start()
+            write_gpt(request, question.content)
+            
             # ~ GPT
             return redirect('pybo:index')
     else:
@@ -59,14 +63,13 @@ def question_create(request):
     context = {'form': form}
     return render(request, 'pybo/question_form.html', context)
 
-def start_gpt(request, new_content):
+def write_gpt(request, new_content):
     new_question = get_object_or_404(Question, pk=new_question_id())
-    form = AnswerForm(request.POST)
+    form = AnswerForm()
     answer = form.save(commit=False)
     answer.content = get_response("아래 코드 최적화 해줘"+new_content)
     answer.author = request.user
     answer.create_date = timezone.now()
     answer.question = new_question
     answer.save()
-
 

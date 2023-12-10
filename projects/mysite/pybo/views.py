@@ -41,9 +41,6 @@ def answer_create(request, question_id):
     context = {'question': question, 'form': form}
     return render(request, 'pybo/question_detail.html', context)
 
-# 장고는 한 request에서 하나의 쓰레드만 대응된다.
-# 따라서 해당 request에서 두 개 이상의 쓰레드 구동은 불가능하다.
-# 즉, async 처리가 불가능하기 때문에 별도의 server 구동을 통해 비동기화해야한다.
 @login_required(login_url='common:login')
 def question_create(request):
     if request.method == 'POST':

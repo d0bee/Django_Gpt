@@ -1,3 +1,5 @@
+from .models import Question
+from .forms import QuestionForm, AnswerForm
 import os
 import django
 import openai
@@ -35,3 +37,4 @@ def abc():
         else:
             print("FALSE")
             time.sleep(10)
+
